@@ -1,29 +1,26 @@
-package server
+package core
 
 import (
 	"fmt"
 	"log/slog"
 	"net"
 	"net/http"
-
-	"github.com/deeeerain/nebula-stub/core/logger"
-	"github.com/deeeerain/nebula-stub/core/middlewares"
 )
 
 type Server struct {
-	logger      logger.Logger
-	middlewares []middlewares.Middleware
+	logger      Logger
+	middlewares []Middleware
 	mux         *http.ServeMux
 }
 
-func New(logger logger.Logger) *Server {
+func New(logger Logger) *Server {
 	return &Server{
 		logger: logger,
 		mux:    http.NewServeMux(),
 	}
 }
 
-func (s *Server) Logger() logger.Logger {
+func (s *Server) Logger() Logger {
 	if s.logger == nil {
 		return slog.Default()
 	}
@@ -31,7 +28,7 @@ func (s *Server) Logger() logger.Logger {
 	return s.logger
 }
 
-func (s *Server) Use(middlewares ...middlewares.Middleware) {
+func (s *Server) Use(middlewares ...Middleware) {
 	s.middlewares = append(s.middlewares, middlewares...)
 }
 
@@ -51,6 +48,6 @@ func (s *Server) Run(listen string) error {
 
 	s.Logger().Info("Server starting", "bind", listenr.Addr())
 
-	chain := middlewares.Chain(s.mux, s.middlewares...)
+	chain := Chain(s.mux, s.middlewares...)
 	return http.Serve(listenr, chain)
 }
