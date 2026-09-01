@@ -1,11 +1,13 @@
-package core
+package app
 
 import (
 	"sync"
+
+	"github.com/deeerain/nebula-core/service"
 )
 
 type Application struct {
-	services map[string]Service
+	services map[string]service.Service
 }
 
 func (a *Application) Run() {
@@ -17,12 +19,12 @@ func (a *Application) Run() {
 	wg.Wait()
 }
 
-func (a *Application) UseServices(builder func(services map[string]Service)) {
+func (a *Application) UseServices(builder func(services map[string]service.Service)) {
 	builder(a.services)
 }
 
 func NewApplication() *Application {
 	return &Application{
-		services: make(map[string]Service),
+		services: make(map[string]service.Service),
 	}
 }
